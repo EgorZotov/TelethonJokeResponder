@@ -20,11 +20,11 @@ async def handler(event):
         print("Message from target")
         founded_users = db.search(User.id == from_id)
         print(founded_users)
+        now = datetime.today()
         if founded_users:
             print("User found", founded_users)
             print("Date of last message", datetime.fromtimestamp(founded_users[0]["last_message_date"]))
             last_message_date = datetime.fromtimestamp(founded_users[0]["last_message_date"])
-            now = datetime.today()
             minutes_diff = int((now - last_message_date).total_seconds()/60)
             print("MINUTES DIFF", minutes_diff)
             if minutes_diff > int(os.getenv("COOLDOWN_MINUTES")):
@@ -35,6 +35,8 @@ async def handler(event):
         else:
             print("Need to insert user", type(datetime.today().timestamp()), datetime.today().timestamp())
             db.insert({"id": from_id, "last_message_date": datetime.today().timestamp()})
+            poruchik_joke = get_porutchik_joke()
+            await event.respond("Ежедневная рубрика, анекдот про поручика\n\n" + poruchik_joke)
 
     
 client.run_until_disconnected()
